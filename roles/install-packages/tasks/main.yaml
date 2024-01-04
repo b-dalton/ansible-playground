@@ -1,0 +1,52 @@
+---
+
+- name: Ensure host is reachable
+  ansible.builtin.ping:
+
+- name: Update apt repo and cache
+  become: true
+  ansible.builtin.apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+- name: Add GPG apt key
+  become: true
+  apt_key:
+    url: "{{item}}"
+    state: present
+  with_items:
+    - https://download.docker.com/linux/ubuntu/gpg
+    - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    - https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Add the repository to Apt sources
+  become: true
+  apt_repository:
+    repo: "{{item}}"
+    state: present
+  with_items:
+    - deb https://download.docker.com/linux/ubuntu bionic stable
+    - deb https://deb.nodesource.com/node_18.x {{ ansible_distribution_release }} main
+    - deb https://apt.kubernetes.io/ kubernetes-xenial main
+
+- name: Install nvm
+  ansible.builtin.shell: >
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+  args:
+    creates: "/home/{{ ansible_user_id }}/.nvm/nvm.sh"
+  register: nvm_installed
+
+- name: Update NPM
+  become: true
+  shell: npm install -g npm@9.8.1
+
+- name: Install Yarn
+  become: true
+  #  update_cache: yes
+  register: yarn_installed
+  ansible.builtin.shell: >
+    npm install --global yarn
+  #    yarn set version 1.22.19 # automatically sets to this version
+  args:
+    executable: /bin/bash
+
+
+
