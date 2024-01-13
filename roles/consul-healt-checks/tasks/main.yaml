@@ -1,0 +1,5 @@
+- name: Check that the service is running
+
+- name: Check that the IPs are present in qurom
+
+- name: Check API health check
