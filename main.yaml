@@ -7,3 +7,20 @@
   roles:
     - install-packages
     - create-user
+
+- name: Consul base
+  hosts: all
+  roles:
+    - consul-common
+    - consul-server
+    - consul-client
+
+- name: Consul internal networking encryption
+  hosts: all
+  roles: 
+    - consul-tls
+
+- name: Consul health checks
+  hosts: all
+  roles:
+    - consul-health-checks

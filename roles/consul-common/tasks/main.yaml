@@ -1,0 +1,15 @@
+- name: Create consul group
+
+- name: Create consul user
+
+- name: Download consul binary
+
+- name: Expand consul binary
+
+- name: Create directories for consul
+
+- name: Create common consul file
+
+- name: Create consul service file
+
+- name: Enable consul service

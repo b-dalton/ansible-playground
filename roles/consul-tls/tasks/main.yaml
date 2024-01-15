@@ -1,0 +1,15 @@
+- name: Create TLS private directories
+
+- name: Create TLS public directories
+
+- name: Initialise consul's CA
+
+- name: Generate server certs
+
+- name: Generate client certs
+
+- name: Zip the client certificates
+
+- name: Place client certificates onto client servers
+
+- name: Unzip the client certificates

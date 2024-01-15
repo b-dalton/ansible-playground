@@ -1,0 +1,6 @@
+consul_base_path        : "/opt/consul.d"
+consul_config_dir       : "{{ consul_base_path }}/config"
+consul_install_location : /usr/local/bin
+consul_tls_dir          : "{{ consul_base_path }}/tls"
+encryption_key_file     : "{{ consul_base_path }}/keyfile.txt"
+hashicorp_registry_url  : "https://releases.hashicorp.com"
