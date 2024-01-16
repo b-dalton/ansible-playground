@@ -16,7 +16,7 @@
     src        : /tmp/consul{{ consul_version }}.zip
     dest       : /usr/local/bin
     remote_src : true
-  notify    : Restart Consul
+  notify    : Restart consul service
 
 - name      : Create directories for consul
   file      :
@@ -30,18 +30,17 @@
     - /opt/consul
     - /opt/consul/data
 
-- name      : Create common consul config file
-  template  :
+- name     : Create common consul config file
+  template :
     src  : common-config.hcl.j2
     dest : /etc/consul.d/common-config.hcl
-  notify    : Restart Consul
-
+  notify   : Restart consul service
 
 - name     : Create consul service file
   template :
     src  : consul.service.j2
     dest : /etc/systemd/system/consul.service
-  notify   : Restart Consul
+  notify   : Restart consul service
 
 - name            : Enable consul service
   systemd_service :

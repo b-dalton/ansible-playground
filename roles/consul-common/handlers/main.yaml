@@ -1,1 +1,4 @@
-- name: Restart consul service 
+- name    : Restart consul service
+  service :
+    name  : consul.service
+    state : restarted
