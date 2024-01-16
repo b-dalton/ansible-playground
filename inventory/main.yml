@@ -1,0 +1,14 @@
+---
+
+all:
+  children:
+    consul_servers:
+      vars:
+        ansible_user: playground
+      hosts:
+        3.8.141.36
+    consul_clients:
+      vars: 
+        ansible_user: playground
+      hosts:
+        127.0.0.1
