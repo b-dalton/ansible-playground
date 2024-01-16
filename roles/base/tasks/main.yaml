@@ -1,5 +1,5 @@
 ---
 
-- name : Install required packages
-  package:
+- name    : Install required packages
+  package :
     - unzip
