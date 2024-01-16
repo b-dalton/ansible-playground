@@ -4,5 +4,5 @@
   template:
     src: server-config.hcl.j2
     dest: "{{ consul_config_dir }}/server-config.hcl"
-  notify: Restart Consul
+  notify: Restart consul service
   
