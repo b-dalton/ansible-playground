@@ -28,7 +28,7 @@
 
 - name: Change the key permissions
   file:
-    path: /etc/consul.d/tls/dc1-server-consul-0-key.pem
+    path: "{{ consul_tls_dir }}/dc1-server-consul-0-key.pem"
     group: "{{ consul_user }}"
     mode: "0640"
   run_once: true
@@ -44,7 +44,7 @@
 
 - name: Change dc1-client-consul-0-key.pem permission
   file:
-    path: /etc/consul.d/tls/dc1-client-consul-0-key.pem
+    path: "{{ consul_tls_dir }}/dc1-client-consul-0-key.pem"
     group: consul
     mode: "0640"
   run_once: true
@@ -56,30 +56,30 @@
       - "{{ consul_tls_dir }}/dc1-client-consul-0.pem"
       - "{{ consul_tls_dir }}/dc1-client-consul-0-key.pem"
       - "{{ consul_tls_dir }}/consul-agent-ca.pem"
-    dest: /etc/consul.d/tls-client.tgz
+    dest: "{{ consul_tls_dir }}-client.tgz"
     mode: "0600"
   run_once: true
   when: ("consul_servers" in group_names)
 
 - name: Register tls zipped directory
   command:
-    cmd: cat /etc/consul.d/tls-client.tgz
+    cmd: cat {{ consul_tls_dir }}-client.tgz
   register: CLIENTTLS
   run_once: true
   when: ("consul_servers" in group_names)
 
 - name: Load TLS into every Consul Client
   copy:
-    dest: /etc/consul.d/tls-client.tgz
+    dest: "{{ consul_tls_dir }}-client.tgz"
     content: "{{ CLIENTTLS.stdout }}"
     mode: "0600"
   when: ("consul_clients" in group_names)
 
 - name: Unzip the client certificates
   unarchive:
-    src: /etc/consul.d/tls-client.tgz
-    dest: "{{ tls_dir }}"
+    src: "{{ consul_tls_dir }}-client.tgz"
+    dest: "{{ consul_tls_dir }}"
     remote_src: true
-    creates: /etc/consul.d/tls/dc1-client-consul-0-key.pem
+    creates: "{{ consul_tls_dir }}/dc1-client-consul-0-key.pem"
   when: ("consul_clients" in group_names)
   notify: Restart Consul
