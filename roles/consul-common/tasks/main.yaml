@@ -39,9 +39,8 @@
   when     : ("consul_servers" in group_names)
 
 - name    : Generate encryption key
-  command :
-    cmd       : consul keygen
-    register : consul_encryption_key
+  shell   : consul keygen
+  register : consul_encryption_key
   when     : not key_file_present.stat.exists and ("consul_servers" in group_names)
   run_once : true
 
@@ -54,9 +53,8 @@
   run_once : true
 
 - name     : Cat encryption key
-  command  :
-    cmd      : cat {{ encryption_key_file }}
-    register : consul_encryption_key
+  shell    : cat {{ encryption_key_file }}
+  register : consul_encryption_key
   when     : ("consul_servers" in group_names)
   run_once : true
 
