@@ -4,6 +4,7 @@
   hosts: all
   roles:
     - consul-common
+    - consul-encryption
     - consul-server
     - consul-client
 
