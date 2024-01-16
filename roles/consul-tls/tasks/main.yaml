@@ -1,15 +1,85 @@
-- name: Create TLS private directories
+---
 
-- name: Create TLS public directories
+- name : Create TLS directories
+  file :
+    path  : "{{ consul_tls_dir }}"
+    state : directory
+    owner : "{{ consul_user  }}"
+    group : "{{ consul_user }}"
+    mode  : "0750"
 
 - name: Initialise consul's CA
+  command:
+    cmd: consul tls ca create
+    creates: consul-agent-ca-key.pem
+    chdir: "{{ consul_tls_dir }}"
+  run_once: true
+  when: ("consul_serverss" in group_names)
+  notify: Restart Consul
 
-- name: Generate server certs
+- name     : Generate server certs
+  command  :
+    cmd     : consul tls cert create -server 
+    creates : dc1-server-consul-0-key.pem
+    chdir   : "{{ consul_tls_dir }}"
+  run_once : true
+  when: ("consul_serverss" in group_names)
+  notify: Restart Consul
 
-- name: Generate client certs
+- name: Change the key permissions
+  file:
+    path: /etc/consul.d/tls/dc1-server-consul-0-key.pem
+    group: "{{ consul_user }}"
+    mode: "0640"
+  run_once: true
+  when: ("consul_serverss" in group_names)
 
-- name: Zip the client certificates
+- name: Generating client certificates
+  command:
+    cmd: consul tls cert create -client 
+    creates: dc1-client-consul-0-key.pem
+    chdir: "{{ consul_tls_dir }}"
+  run_once: true
+  when: ("consul_serverss" in group_names)
 
-- name: Place client certificates onto client servers
+- name: Change dc1-client-consul-0-key.pem permission
+  file:
+    path: /etc/consul.d/tls/dc1-client-consul-0-key.pem
+    group: consul
+    mode: "0640"
+  run_once: true
+  when: ("consul_serverss" in group_names)
+
+- name: Archive the tls directory for client
+  archive:
+    path: 
+      - "{{ consul_tls_dir }}/dc1-client-consul-0.pem"
+      - "{{ consul_tls_dir }}/dc1-client-consul-0-key.pem"
+      - "{{ consul_tls_dir }}/consul-agent-ca.pem"
+    dest: /etc/consul.d/tls-client.tgz
+    mode: "0600"
+  run_once: true
+  when: ("consul_serverss" in group_names)
+
+- name: Register tls zipped directory
+  command:
+    cmd: cat /etc/consul.d/tls-client.tgz
+  register: CLIENTTLS
+  run_once: true
+  when: ("consul_serverss" in group_names)
+
+- name: Load TLS into every Consul Client
+  copy:
+    dest: /etc/consul.d/tls-client.tgz
+    content: "{{ CLIENTTLS.stdout }}"
+    mode: "0600"
+  when: ("consul_clients" in group_names)
 
 - name: Unzip the client certificates
+  unarchive:
+    src: /etc/consul.d/tls-client.tgz
+    dest: "{{ tls_dir }}"
+    remote_src: true
+    creates: /etc/consul.d/tls/dc1-client-consul-0-key.pem
+  when: ("consul_clients" in group_names)
+  notify: Restart Consul
