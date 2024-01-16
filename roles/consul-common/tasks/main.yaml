@@ -47,7 +47,7 @@
 
 - name     : Store in local file
   copy     :
-    content : consul_encryprion_key.stdout
+    content : "{{consul_encryprion_key.stdout}}"
     dest    : "{{ encryption_key_file }}"
     mode    : 0600
   when     : not key_file_present.stat.exists and ("consul_servers" in group_names)
@@ -58,10 +58,6 @@
   register : consul_encryption_key
   when     : ("consul_servers" in group_names)
   run_once : true
-
-- name : debug encryption key
-  debug :
-    var : consul_encryption_key
 
 - name     : Create common consul config file
   template :
