@@ -15,12 +15,6 @@ addresses {
   http = "0.0.0.0"
 }
 tls {
- # https {
- #    ca_file = "{{ ext_tls }}/dco.pem"
- #    cert_file = "{{ ext_tls }}/consul.devcastops.pem"
- #    key_file = "{{ ext_tls }}/consul.devcastops.key"
- #    verify_incoming = false
- #  }
   internal_rpc {
     verify_server_hostname = true
   }
