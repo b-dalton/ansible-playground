@@ -2,4 +2,5 @@
 
 - name    : Install required packages
   package :
-    - unzip
+    name  : unzip
+    state : present
