@@ -3,5 +3,5 @@
 - name     : Set up client config file
   template :
     src  : client-config.hcl.j2
-    dest : "{{ consul_cofig_dir }}/client-config.hcl"
+    dest : "{{ consul_config_dir }}/client-config.hcl"
   notify   : Restart Consul client
