@@ -42,19 +42,23 @@
   command :
     cmd       : consul keygen
     register : consul_encryption_key
-  when    : not key_file_present.stat.exists and ("consul_servers" in group_names)
+  when     : not key_file_present.stat.exists and ("consul_servers" in group_names)
+  run_once : true
 
-- name : Store in local file
-  copy :
+- name     : Store in local file
+  copy     :
     content : consul_encryprion_key.stdout
     dest    : "{{ encryption_key_file }}"
     mode    : 0600
-  when : not key_file_present.stat.exists and ("consul_servers" in group_names)
+  when     : not key_file_present.stat.exists and ("consul_servers" in group_names)
+  run_once : true
 
-- name : Cat encryption key
-  command :
-    cmd : cat {{ encryption_key_file }}
-    register: consul_encryption_key
+- name     : Cat encryption key
+  command  :
+    cmd      : cat {{ encryption_key_file }}
+    register : consul_encryption_key
+  when     : ("consul_servers" in group_names)
+  run_once : true
 
 - name     : Create common consul config file
   template :
