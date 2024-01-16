@@ -3,6 +3,7 @@
 - name: Consul base
   hosts: all
   roles:
+    - base
     - consul-common
     - consul-encryption
     - consul-server
