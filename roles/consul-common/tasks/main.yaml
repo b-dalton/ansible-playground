@@ -9,7 +9,7 @@
     name : "{{ consul_user }}"
 
 - name                   : Download consul binary
-  ansible.builtin.geturl :
+  ansible.builtin.get_url :
     url  : https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip
     dest : /tmp/consul{{ consul_version }}.zip
 
