@@ -5,7 +5,6 @@
   roles:
     - base
     - consul-common
-    - consul-encryption
     - consul-server
     - consul-client
 
