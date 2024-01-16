@@ -1,1 +1,8 @@
+---
+
 - name: Set up server config file
+  template:
+    src: server-config.hcl.j2
+    dest: "{{ consul_cofig_dir }}/server-config.hcl"
+  notify: Restart Consul
+  
