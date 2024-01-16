@@ -1,5 +1,38 @@
-- name: Check that the service is running
+- name          : Register services
+  service_facts :
 
-- name: Check that the IPs are present in qurom
+- name        : Does the Consul service exsist?
+  debug       :
+    msg : "Consul service does not exist!"
+  failed_when : ("consul.service" not in ansible_facts.services)
+  when        : ("consul.service" not in ansible_facts.services)
 
-- name: Check API health check
+- name        : Is the consul service running?
+  debug       :
+    msg : "Consul service isn't running!"
+  failed_when : (ansible_facts.services["consul.service"].state != "running")
+  when        : (ansible_facts.services["consul.service"].state != "running")
+
+- name     : Get consul members 
+  command  :
+    cmd : consul members
+  register : consul_members
+  run_once : true
+
+- name        : Is the host IP present in the members list? 
+  debug       :
+    msg : "IP not in memebers"
+  failed_when : (inventory_hostname not in consul_members.stdout)
+  when        : (inventory_hostname not in consul_members.stdout)
+
+- name     : Get Consul Server health Data
+  uri      :
+    url : "http://{{ inventory_hostname }}:8500/v1/health/node/consul-server-{{ ansible_hostname }}"
+  when     : ("consul_servers" in group_names)
+  register : consule_node_health
+
+- name        : Print Consul Server health Data Variable when unhealthy
+  debug       : 
+    var : consule_node_health
+  failed_when : consule_node_health.json[0].Status != "passing"
+  when        : ("consul_servers" in group_names)
