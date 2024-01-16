@@ -15,7 +15,7 @@
     chdir: "{{ consul_tls_dir }}"
   run_once: true
   when: ("consul_servers" in group_names)
-  notify: Restart Consul
+  notify: Restart consul service
 
 - name     : Generate server certs
   command  :
@@ -24,7 +24,7 @@
     chdir   : "{{ consul_tls_dir }}"
   run_once : true
   when: ("consul_servers" in group_names)
-  notify: Restart Consul
+  notify: Restart consul service
 
 - name: Change the key permissions
   file:
@@ -82,4 +82,4 @@
     remote_src: true
     creates: "{{ consul_tls_dir }}/dc1-client-consul-0-key.pem"
   when: ("consul_clients" in group_names)
-  notify: Restart Consul
+  notify: Restart consul service
