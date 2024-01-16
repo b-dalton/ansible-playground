@@ -14,7 +14,7 @@
     creates: consul-agent-ca-key.pem
     chdir: "{{ consul_tls_dir }}"
   run_once: true
-  when: ("consul_serverss" in group_names)
+  when: ("consul_servers" in group_names)
   notify: Restart Consul
 
 - name     : Generate server certs
@@ -23,7 +23,7 @@
     creates : dc1-server-consul-0-key.pem
     chdir   : "{{ consul_tls_dir }}"
   run_once : true
-  when: ("consul_serverss" in group_names)
+  when: ("consul_servers" in group_names)
   notify: Restart Consul
 
 - name: Change the key permissions
@@ -32,7 +32,7 @@
     group: "{{ consul_user }}"
     mode: "0640"
   run_once: true
-  when: ("consul_serverss" in group_names)
+  when: ("consul_servers" in group_names)
 
 - name: Generating client certificates
   command:
@@ -40,7 +40,7 @@
     creates: dc1-client-consul-0-key.pem
     chdir: "{{ consul_tls_dir }}"
   run_once: true
-  when: ("consul_serverss" in group_names)
+  when: ("consul_servers" in group_names)
 
 - name: Change dc1-client-consul-0-key.pem permission
   file:
@@ -48,7 +48,7 @@
     group: consul
     mode: "0640"
   run_once: true
-  when: ("consul_serverss" in group_names)
+  when: ("consul_servers" in group_names)
 
 - name: Archive the tls directory for client
   archive:
@@ -59,14 +59,14 @@
     dest: /etc/consul.d/tls-client.tgz
     mode: "0600"
   run_once: true
-  when: ("consul_serverss" in group_names)
+  when: ("consul_servers" in group_names)
 
 - name: Register tls zipped directory
   command:
     cmd: cat /etc/consul.d/tls-client.tgz
   register: CLIENTTLS
   run_once: true
-  when: ("consul_serverss" in group_names)
+  when: ("consul_servers" in group_names)
 
 - name: Load TLS into every Consul Client
   copy:

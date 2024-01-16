@@ -32,6 +32,30 @@
     - /opt/consul
     - /opt/consul/data
 
+- name     : Check for encryption key
+  stat     :
+    path : "{{ encryption_key_file }}"
+  register : key_file_present 
+  when     : ("consul_servers" in group_names)
+
+- name    : Generate encryption key
+  command :
+    cmd       : consul keygen
+    register : consul_encryption_key
+  when    : not key_file_present.stat.exists and ("consul_servers" in group_names)
+
+- name : Store in local file
+  copy :
+    content : consul_encryprion_key.stdout
+    dest    : "{{ encryption_key_file }}"
+    mode    : 0600
+  when : not key_file_present.stat.exists and ("consul_servers" in group_names)
+
+- name : Cat encryption key
+  command :
+    cmd : cat {{ encryption_key_file }}
+    register: consul_encryption_key
+
 - name     : Create common consul config file
   template :
     src  : common-config.hcl.j2

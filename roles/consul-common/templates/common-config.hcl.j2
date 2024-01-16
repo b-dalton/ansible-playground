@@ -1,2 +1,2 @@
 retry_join = ["{{ query('inventory_hostnames', 'consul_servers') | join('","')}}"]
-encrypt = "{{ consul_encryption_key }}"
+encrypt = "{{ consul_encryption_key.stdout }}"
