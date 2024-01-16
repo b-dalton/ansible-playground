@@ -121,7 +121,7 @@ In `roles/consul-tls/tasks/main.yaml` start adding the tasks to:
     chdir: "{{ consul_tls_dir }}"
   run_once: true
   when: ("consul_servers" in group_names)
-  notify: Restart Consul
+  notify: Restart consul service
 ```
 
 3. Create the required Consul client and server certificates
@@ -133,7 +133,7 @@ In `roles/consul-tls/tasks/main.yaml` start adding the tasks to:
     chdir   : "{{ consul_tls_dir }}"
   run_once : true
   when: ("consul_servers" in group_names)
-  notify: Restart Consul
+  notify: Restart consul service
 
 - name: Change the key permissions
   file:
@@ -194,7 +194,7 @@ In `roles/consul-tls/tasks/main.yaml` start adding the tasks to:
     remote_src: true
     creates: "{{ consul_tls_dir }}/dc1-client-consul-0-key.pem"
   when: ("consul_clients" in group_names)
-  notify: Restart Consul
+  notify: Restart consul service
 ```
 
 Run the ansible playbook to apply your configuration
