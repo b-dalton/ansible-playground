@@ -1,7 +1,0 @@
----
-
-- name: Restart Consul
-  systemd:
-    name: consul.service
-    state: restarted
-    enabled: true
