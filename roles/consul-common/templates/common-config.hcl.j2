@@ -1,2 +1,3 @@
 retry_join = ["{{ query('inventory_hostnames', 'consul_servers') | join('","')}}"]
 encrypt = "{{ consul_encryption_key.stdout }}"
+bind_addr = "{{ ansible_default_ipv4.address }}"
