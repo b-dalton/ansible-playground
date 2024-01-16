@@ -1,3 +1,5 @@
+---
+
 - name    : Restart consul service
   service :
     name  : consul.service

@@ -1,3 +1,5 @@
+---
+
 consul_group   : "{{ consul_user }}"
 consul_user    : consul
 consul_version : 1.17.1
