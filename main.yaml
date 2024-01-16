@@ -1,12 +1,5 @@
 ---
 
-- name: Consul base
-  hosts: all
-  become: true
-  roles:
-    - base
-    - consul-common
-
 - name: Consul internal networking encryption
   hosts: all
   become: true
