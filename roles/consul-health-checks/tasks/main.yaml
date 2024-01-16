@@ -15,18 +15,6 @@
   failed_when : (ansible_facts.services["consul.service"].state != "running")
   when        : (ansible_facts.services["consul.service"].state != "running")
 
-- name     : Get consul members 
-  command  :
-    cmd : consul members
-  register : consul_members
-  run_once : true
-
-- name        : Is the host IP present in the members list? 
-  debug       :
-    msg : "IP not in memebers"
-  failed_when : (inventory_hostname not in consul_members.stdout)
-  when        : (inventory_hostname not in consul_members.stdout)
-
 - name     : Get Consul Server health Data
   uri      :
     url : "http://{{ inventory_hostname }}:8500/v1/health/node/consul-server-{{ ansible_hostname }}"
