@@ -60,7 +60,8 @@
   run_once : true
 
 - name : debug encryption key
-  var : consul_encryption_key
+  debug :
+    var : consul_encryption_key
 
 - name     : Create common consul config file
   template :
