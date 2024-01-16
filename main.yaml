@@ -1,13 +1,5 @@
 ---
 
-- name: Run roles
-  hosts: aws_ec2
-  user: ubuntu
-
-  roles:
-    - install-packages
-    - create-user
-
 - name: Consul base
   hosts: all
   roles:
