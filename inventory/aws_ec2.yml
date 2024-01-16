@@ -1,11 +1,1 @@
-plugin: amazon.aws.aws_ec2
-profile: DPG_TF_CLOUD_SVC_USR # TBC - lab exercise
-regions:
-  - eu-west-2
-hostnames:
-  - name: 'INSTANCE_NAME' # TBC - lab exercise
-compose:
-  # use a private address where a public one isn't assigned
-  ansible_host: public_ip_address|default(private_ip_address) # This ensures that the IP address gets used with the host
-
 
