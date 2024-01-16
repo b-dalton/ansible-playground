@@ -47,7 +47,7 @@
 
 - name     : Store in local file
   copy     :
-    content : "{{consul_encryprion_key.stdout}}"
+    content : "{{consul_encryption_key.stdout}}"
     dest    : "{{ encryption_key_file }}"
     mode    : 0600
   when     : not key_file_present.stat.exists and ("consul_servers" in group_names)
