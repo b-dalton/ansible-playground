@@ -20,7 +20,76 @@ Download and unzip Consul binaries using the uri modules
 
 ### Part 4. Templating
 
-Set up a unit file for Consul using the J2 templating avalibe in Ansible 
+Set up a service file for Consul using the J2 templating available in Ansible.
+
+1. Paste the below block at the end of the `roles/consul-common/tasks/main.yaml` file:
+  ```
+- name     : Create consul service file
+  template :
+    src  : consul.service.j2
+    dest : /etc/systemd/system/consul.service
+
+- name            : Enable consul service
+  systemd_service :
+    state : started
+    name  : consul.service
+  ```
+
+2. Add the contents for the service template to the `consul.service.j2` in the `templates` directory:
+
+```
+[Unit]
+Description="HashiCorp Consul - A service mesh solution"
+Documentation=https://www.consul.io/
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty={{ consul_config_dir }}/common-config.hcl
+
+[Service]
+User=consul
+Group=consul
+ExecStart=/usr/local/bin/consul agent -config-dir={{ consul_config_dir }}
+ExecReload=/bin/kill --signal HUP $MAINPID
+KillMode=process
+KillSignal=SIGTERM
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+```
+
+3. We will also want to template out a config file for this service file to use. This will be done by creating a play just above the previous one created in step 1.
+Add the following:
+```
+- name     : Create common consul config file
+  template :
+    src  : common-config.hcl.j2
+    dest : "{{ consul_config_dir }}/common-config.hcl"
+```
+
+4. Add the contents for the config template to the `common-config.hcl.j2` in the `templates` directory:
+```
+retry_join = ["{{ query('inventory_hostnames', 'consul_servers') | join('","')}}"]
+encrypt = "bGlrZSwgc2hhcmUsIHN1YnNjcmliZSBhbmQgYmVsbAo="
+bind_addr = "{{ ansible_default_ipv4.address }}"
+```
+
+5. We also have more templating in our `consul-client` and `consul-server` roles. We will also want to add these to our main playbook now specifying the host group to target.
+Add the following plays below the `Consul base` play:
+```
+- name: Set up servers
+  hosts: consul_servers
+  become: true
+  roles:
+    - consul-server
+
+- name : set up clients
+  hosts : consul_clients
+  become : true
+  roles : 
+    - consul-client
+```
 
 ### Part 5. Handlers
 
