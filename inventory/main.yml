@@ -4,9 +4,11 @@ all:
   children:
     consul_servers:
       vars:
-        ansible_user: playground
+        ansible_user      : playground
+        ansible_ssh_pass  : # Add server password
+        ansible_sudo_pass : # Add server password
       hosts:
-        3.8.141.36
+        # Add target instance IP
     consul_clients:
       vars: 
         ansible_user: playground
