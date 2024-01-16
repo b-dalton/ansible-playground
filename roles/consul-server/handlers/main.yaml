@@ -1,6 +1,6 @@
 ---
 
-- name: Restart Consul
+- name: Restart Consul server
   systemd:
     name: consul.service
     state: restarted
