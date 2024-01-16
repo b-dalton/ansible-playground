@@ -1,1 +1,7 @@
-- name : Set up common config file
+---
+
+- name     : Set up client config file
+  template :
+    src  : client-config.hcl.j2
+    dest : /etc/consul.d/client-config.hcl
+  notify   : Restart Consul client
