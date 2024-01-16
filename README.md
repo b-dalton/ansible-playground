@@ -30,6 +30,62 @@ Set up a handler for Consul so that if the config is changed in any of the roles
 
 Use command block to show that you can just execute custom commands on the server if there isn't a module available.
 
+This needs to be done in the `consul-common` role in: `roles/consul-common/tasks/main.yaml` as it is required for the config files generated as part of the role
+
+1. To store the encryption key, we're currently placing in a file on the server. So before doing anything, we want to check whether this file already exists.
+To do this, we will use the `stat` module to register a variable (using the `register` attribute) for later plays.
+Place the following block after the `Create directories for consul` play:
+```
+- name     : Check for encryption key
+  stat     :
+    path : "{{ encryption_key_file }}"
+  register : key_file_present 
+  when     : ("consul_servers" in group_names)
+```
+
+2. If there is not an encryption key already present, we will want to generate a new one.
+This is done through a Consul command in which we will use a `shell` command to execute directly on the server.
+Add the following block directly below the block from step 1:
+```
+- name    : Generate encryption key
+  shell   : consul keygen
+  register : consul_encryption_key
+  when     : not key_file_present.stat.exists and ("consul_servers" in group_names)
+  run_once : true
+```
+
+3. If we have generated a new encryption key, we want to store it in a file on one of the servers.
+We can make use of the `copy` module to achieve this.
+Add the following block directly below the block from step 2:
+```
+- name     : Store in local file
+  copy     :
+    content : "{{consul_encryption_key.stdout}}"
+    dest    : "{{ encryption_key_file }}"
+    mode    : 0600
+  when     : not key_file_present.stat.exists and ("consul_servers" in group_names)
+  run_once : true
+```
+
+4. Register the contents of the file (that contains the encryption key) to a variable.
+```
+- name     : Cat encryption key
+  shell    : cat {{ encryption_key_file }}
+  register : consul_encryption_key
+  when     : ("consul_servers" in group_names)
+  run_once : true
+```
+
+5. We want to update the value in our common config template (in `templates/common-config.hcl.j2`) to use the new encryption key that we're now dynamically generating.
+Replace:
+```
+encrypt = "bGlrZSwgc2hhcmUsIHN1YnNjcmliZSBhbmQgYmVsbAo="
+```
+With:
+```
+encrypt = "{{ consul_encryption_key.stdout }}"
+```
+
 ### Part 7. TLS time 
 
 Generate and pass around TLS files so that the service can talk in an encrypted manner.
