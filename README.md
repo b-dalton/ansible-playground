@@ -18,6 +18,23 @@ Demonstrate deleting one of the directories and getting ansible to recreate it.
 
 Download and unzip Consul binaries using the uri modules
 
+1. We need to pull the binary that we are going to be running from an external source, in this case releases.hashicopr.com. To do this we will use the URI module, inserting the following block into `roles/consul-common/tasks/main.yaml` after the create Consul user task.
+```
+- name                   : Download consul binary
+  ansible.builtin.get_url :
+    url  : https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip
+    dest : /tmp/consul{{ consul_version }}.zip
+```
+
+2. Now that we have the binary downloade to the tmp derectory we need to exspand it ot a useful location location. This can be done with the unarchive module by adding the following block below the part added in step 1.
+```
+- name      : Expand consul binary
+  unarchive :
+    src        : /tmp/consul{{ consul_version }}.zip
+    dest       : /usr/local/bin
+    remote_src : true
+```
+
 ### Part 4. Templating
 
 Set up a service file for Consul using the J2 templating available in Ansible.
