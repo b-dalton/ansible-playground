@@ -1,18 +1,87 @@
 # Ansible Playground
 
-## Playground links
-
 ## Lab
+
+In this lab we are going to use ansible to install and configure consul in a server client grouping.
 
 ### Part 1. Defining inventory
 
 Set up the inventory file with the hosts that we will be using for the playground and structure into groups
 Show that the inventory is valid by running the ping command.
 
+1. There is a template provided in the `invetory/main.yaml` that we need to populate some values in. We need to add the IP of our target host server and the IP of our current server along with the user for Ansible ssh with and password that it can use to privilege escalation. This will have been provided to you in the labs portal.
+
+2. To test that the inventory has been set up correctly we can run the following command.
+```
+ansible all -i inventory -m ping
+```
+
+This should return something like the following
+![ping_success](media/ping_sucess.png)
+
 ### Part 2. Base set up 
 
 Use ansible to install required system packages and define the user and directories on the remote hosts.
 Demonstrate deleting one of the directories and getting ansible to recreate it.
+
+1. We first need to make sure any packages that we need on the server are installed this can be done uing a packages module. This will be done in the `roles/base/tasks/main.yaml` file. To do this we set up a task give it and give it a name. Then define what module that we want to use, in this case packages, and finally filla out the paramters for that task. All of this put together will add the following block to the file.
+```
+- name    : Install required packages
+  package :
+    name  : unzip
+    state : present
+
+```
+
+2. Now that we have teh content of our first role defined we will wan to add that to our playbook `main.yaml` that sits at the top level of this directory. When adding the role we will need to define the hosts that it should be applied to as well as any privialge esclation if required. This results in adding the following block of code.
+```
+- name: Consul base
+  hosts: all
+  become: true
+  roles:
+    - base
+```
+
+3. The next step is adding the group that will grant access to the items required for running the program. This time we will be using the group module and we only need to configure one atribute the group name. In `roles/consul-common/tasks/main.yaml` add the following block of code.
+
+```
+- name  : Create consul group
+  group :
+    name : "{{ consul_group }}"
+```
+
+4. Now that we have a group we will want a user as well. This is achivied in a verry similar manner using the user module. Add this block directly after the block added in step 1.
+```
+- name : Create consul user
+  user :
+    name : "{{ consul_user }}"
+```
+
+5. With the user and group set up we can build a directory structure with the correct ownership. For this as we want to create multiple directories with the same owenership and permissions we can use the `with_items` atribute alongside our file module that allows us to create multipe items with a single task. Add the below block after the following task.
+```
+- name      : Create directories for consul
+  file      :
+    path  : "{{item}}"
+    state : directory
+    owner : consul
+    group : consul
+    mode  : "0750"
+  with_items :
+    - "{{ consul_config_dir }}"
+    - /opt/consul
+    - /opt/consul/data
+    - "{{ consul_tls_dir }}"
+``` 
+
+6. Now that we have the base of what we want to run in the `consul-common` role we can add it to our main playbook as anther role as we did in step one.
+```
+    - consul-common
+```
+
+7. To see of what we have done so far works we can run the 
+```
+ansible-playbook -i inventory main.yamls
+```
 
 ### Part 3. Pulling in data from outside of Ansbible 
 
