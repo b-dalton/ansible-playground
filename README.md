@@ -9,7 +9,7 @@ In this lab we are going to use ansible to install and configure consul in a ser
 Set up the inventory file with the hosts that we will be using for the playground and structure into groups
 Show that the inventory is valid by running the ping command.
 
-1. There is a template provided in the `invetory/main.yaml` that we need to populate some values in. We need to add the IP of our target host server and the IP of our current server along with the user for Ansible ssh with and password that it can use to privilege escalation. This will have been provided to you in the labs portal.
+1. There is a template provided in the `invetory/main.yaml` that we need to populate some values in. We need to add the IP of our target host server and the IP of our current server along with the user for Ansible ssh with and password that it can use to privilege escalation. This will have been provided to you in the labs portal. The ips will replace the `0.0.0.0` values in the current file.
 
 2. To test that the inventory has been set up correctly we can run the following command.
 ```
