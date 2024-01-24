@@ -80,7 +80,7 @@ Demonstrate deleting one of the directories and getting ansible to recreate it.
 
 7. To see of what we have done so far works we can run the 
 ```
-ansible-playbook -i inventory main.yamls
+ansible-playbook -i inventory main.yaml
 ```
 
 ### Part 3. Pulling in data from outside of Ansbible 
@@ -116,7 +116,7 @@ Set up a service file for Consul using the J2 templating available in Ansible.
     dest : /etc/systemd/system/consul.service
 
 - name            : Enable consul service
-  systemd_service :
+  service :
     state : started
     name  : consul.service
   ```
@@ -184,28 +184,28 @@ For this step we will firstly be working in `roles/consul-common` and then `role
 
 1. Create a handler which will restart the Consul service if any config changes are made that might affect it.
 - Add the below block to `roles/consul-common/handlers/main.yaml`: 
-    ```
+```
   - name    : Restart consul service
     service :
       name    : consul.service
       state   : restarted
       enabled : true
-    ```
+```
 
 2. Notify the handler to restart the Consul service by adding the `notify` statement to any play that would require a service restart.
 This will call the handler to trigger the restart at the end of that role group execution if a change is made by that play.
 
 - In the `roles/consul-common/tasks/main.yaml` file, add the below line to the following tasks; `Expand consul binary`, `Create common consul config file` and `Create consul service file`:
-    ```
+```
     notify    : Restart consul service
-    ```
+```
 - This should be indented at the same level as `name`.
 
 3. The handler has already been created for the `consul-client` and `consul-server` roles. We just need to add the `notify` statements.
 - Add the below `notify` statement:
-    ```
+```
     notify   : Restart consul service
-    ```
+```
 - To the following files:
   - `consul-client` role tasks file in `roles/consul-client/tasks/main.yaml` 
   - `consul-server` role tasks file in `roles/consul-server/tasks/main.yaml`
@@ -252,6 +252,7 @@ Add the following block directly below the block from step 2:
 ```
 
 4. Register the contents of the file (that contains the encryption key) to a variable.
+This should follow directly from step 3.
 ```
 - name     : Cat encryption key
   shell    : cat {{ encryption_key_file }}

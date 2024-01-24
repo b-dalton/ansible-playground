@@ -1,11 +1,5 @@
 ---
 
-- name: Consul internal networking encryption
-  hosts: all
-  become: true
-  roles: 
-    - consul-tls
-
 - name: Consul health checks
   hosts: all
   become: true

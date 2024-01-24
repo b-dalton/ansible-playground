@@ -1,8 +1,6 @@
 ---
 
 all:
-  vars:
-    ansible_host_key_checking: false
   children:
     consul_servers:
       vars:
@@ -10,11 +8,11 @@ all:
         ansible_ssh_pass  : # Add server password
         ansible_sudo_pass : # Add server password
       hosts:
-        # Add target instance IP
+        0.0.0.0:
     consul_clients:
       vars: 
         ansible_user: playground
         ansible_ssh_pass  : # Add server password
         ansible_sudo_pass : # Add server password
       hosts:
-        # Add the host instance IP
+        0.0.0.0:
