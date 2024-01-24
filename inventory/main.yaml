@@ -8,9 +8,11 @@ all:
         ansible_ssh_pass  : # Add server password
         ansible_sudo_pass : # Add server password
       hosts:
-        # Add target instance IP
+        0.0.0.0:
     consul_clients:
       vars: 
         ansible_user: playground
+        ansible_ssh_pass  : # Add server password
+        ansible_sudo_pass : # Add server password
       hosts:
-        127.0.0.1
+        0.0.0.0:
