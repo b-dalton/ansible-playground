@@ -1,30 +1,5 @@
 ---
 
-- name: Consul base
-  hosts: all
-  become: true
-  roles:
-    - base
-    - consul-common
-
-- name: Set up servers
-  hosts: consul_servers
-  become: true
-  roles:
-    - consul-server
-
-- name : set up clients
-  hosts : consul_clients
-  become : true
-  roles : 
-    - consul-client
-
-- name: Consul internal networking encryption
-  hosts: all
-  become: true
-  roles: 
-    - consul-tls
-
 - name: Consul health checks
   hosts: all
   become: true
